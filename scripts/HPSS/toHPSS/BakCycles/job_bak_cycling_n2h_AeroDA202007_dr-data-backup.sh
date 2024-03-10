@@ -21,27 +21,23 @@ RECDIR=${SCRIPTDIR}/CYC_N2H_RECORD
 TOPNIAG="/collab1/data/Bo.Huang/FromOrion/expRuns/AeroReanl/"
 TOPHPSS="/BMC/fim/5year/MAPP_2018/bhuang/UFS-Aerosols-expRuns/UFS-Aerosols_RETcyc/AeroReanl/"
 
-EXPS="
-AeroReanl_EP4_AeroDA_YesSPEEnKF_YesSfcanl_v15_0dz0dp_41M_C96_202007
-"
-FIELDS="
-dr-data
-dr-data-backup
-"
+EXP="AeroReanl_EP4_AeroDA_YesSPEEnKF_YesSfcanl_v15_0dz0dp_41M_C96_202007"
+
+FIELD="dr-data-backup"
 #dr-data
 #dr-data-backup
 
 NCP="/bin/cp -r"
 
 [[ ! -d ${RECDIR} ]] && mkdir -p ${RECDIR}
-for EXP in ${EXPS}; do
-for FIELD in ${FIELDS};do
+#for EXP in ${EXPS}; do
+#for FIELD in ${FIELDS};do
     EXPNIAG=${TOPNIAG}/${EXP}/${FIELD}/	
     EXPHPSS=${TOPHPSS}/${EXP}/${FIELD}/
 
     EXPNIAG_CYC=${EXPNIAG}/toHPSS/CYCLE.info
     CDATE=$(cat ${EXPNIAG_CYC})
-    if [ ${CDATE} -gt 2020072418 ]; then
+    if [ ${CDATE} -gt 2020072518 ]; then
         exit 0
     fi
     EXPNIAG_TMP=${EXPNIAG}/toHPSS/tmp/${CDATE}
@@ -88,5 +84,5 @@ if [ ${ERR} -ne 0 ]; then
 fi
         fi # SUCCESSFUL
     fi # Wait to next cycle
-done # Field
-done # EXP
+#done # Field
+#done # EXP

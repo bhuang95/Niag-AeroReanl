@@ -31,7 +31,7 @@ if [ ${ICNT} -ne 0 ]; then
 else
     echo "N2H succeeded at ${CDATE}"
     echo "${CDATE}: SUCCEEDED" >> ${EXPREC}
-    echo "${CDATE}: SUCCEEDED" >> ${EXPSTATUS}
+    echo "${CDATE}: SUCCEEDED" > ${EXPSTATUS}
     echo ${NEXTCYC} > ${EXPNIAG_CYC}
     #rm -rf ${EXPNIAG_DIR}/*.tar
     echo "TEST: ${EXPNIAG_DIR}"
