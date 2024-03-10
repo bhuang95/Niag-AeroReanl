@@ -1,11 +1,17 @@
 #!/bin/bash
 
-TASKDIR="/home/Bo.Huang/Projects/AeroReanl/scripts/HPSS/toHPSS/BakCycles"
-TASKS="
-job_bak_cycling_n2h_AeroDA202007_dr-data
-job_bak_cycling_n2h_AeroDA202007_dr-data-backup
+TASK="/home/Bo.Huang/Projects/AeroReanl/scripts/HPSS/toHPSS/BakCycles/job_bak_cycling_n2h.sh"
+EXPS="
+AeroReanl_EP4_AeroDA_YesSPEEnKF_YesSfcanl_v15_0dz0dp_41M_C96_202007
 "
-for TASK in ${TASKS}; do
-echo "Run ${DIR}/${TASK}"
-${TASKDIR}/${TASK}.sh
+FIELDS="
+dr-data
+dr-data-backup
+"
+
+for EXP in ${EXPS}; do
+for FIELD in ${FIELDS}; do
+echo "Running N2H-${EXP}-${FIELD}"
+${TASK} ${EXP} ${FIELD}
+done
 done

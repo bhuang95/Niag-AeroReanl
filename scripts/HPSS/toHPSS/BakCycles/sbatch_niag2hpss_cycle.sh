@@ -26,11 +26,12 @@ done
 
 if [ ${ICNT} -ne 0 ]; then
     echo "N2H failed at ${CDATE}"
-    echo "${CDATE}: FAILED" >> ${EXPREC}
+    echo "${CDATE}: FAILED at $(date)" >> ${EXPREC}
+    echo "${CDATE}: FAILED" > ${EXPSTATUS}
     exit ${ICNT}
 else
     echo "N2H succeeded at ${CDATE}"
-    echo "${CDATE}: SUCCEEDED" >> ${EXPREC}
+    echo "${CDATE}: SUCCEEDED at $(date)" >> ${EXPREC}
     echo "${CDATE}: SUCCEEDED" > ${EXPSTATUS}
     echo ${NEXTCYC} > ${EXPNIAG_CYC}
     #rm -rf ${EXPNIAG_DIR}/*.tar
