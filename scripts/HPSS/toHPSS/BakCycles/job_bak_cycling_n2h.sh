@@ -29,40 +29,44 @@ NCP="/bin/cp -r"
 [[ ! -d ${RECDIR} ]] && mkdir -p ${RECDIR}
 #for EXP in ${EXPS}; do
 #for FIELD in ${FIELDS};do
-    EXPNIAG=${TOPNIAG}/${EXP}/${FIELD}/	
-    EXPHPSS=${TOPHPSS}/${EXP}/${FIELD}/
+EXPNIAG=${TOPNIAG}/${EXP}/${FIELD}/	
+EXPHPSS=${TOPHPSS}/${EXP}/${FIELD}/
 
-    EXPNIAG_CYC=${EXPNIAG}/toHPSS/CYCLE.info
-    CDATE=$(cat ${EXPNIAG_CYC})
-    if [ ${CDATE} -gt 2020072518 ]; then
-        exit 0
-    fi
+EXPNIAG_CYC=${EXPNIAG}/toHPSS/CYCLE.info
+CDATE=$(cat ${EXPNIAG_CYC})
+if [ ${CDATE} -gt 2020072618 ]; then
+    exit 0
+fi
+
+EXPGLBUS_REC=${EXPNIAG}/${CDATE}/Globus_o2n_${CDATE}.record
+if [ -f ${EXPGLBUS_REC} ]; then
     EXPNIAG_TMP=${EXPNIAG}/toHPSS/tmp/${CDATE}
+    [[ ! -d ${EXPNIAG_TMP} ]] && mkdir -p ${EXPNIAG_TMP}
     EXPNIAG_TMP_STATUS=${EXPNIAG_TMP}/N2H.status
-    #if ( grep "${CDATE}: SUCCEEDED" ${EXPNIAG_TMP_STATUS} ); then
-    #    echo "${EXP}-${FIELD} at ${CDATE} is complete and wait to next cycle."
-    #	exit 0
     if ( grep "${CDATE}: ONGOING" ${EXPNIAG_TMP_STATUS} ); then
         echo "${EXP}-${FIELD} at ${CDATE} is ongoing and wait."
 	exit 0
     elif ( grep "${CDATE}: FAILED" ${EXPNIAG_TMP_STATUS} ); then
         echo "${EXP}-${FIELD} at ${CDATE} failed and wait."
 	exit 0
-    else
-        EXPGLBUS_REC=${EXPNIAG}/${CDATE}/Globus_o2n_${CDATE}.record
-	if ( grep SUCCESSFUL ${EXPGLBUS_REC} ); then
-	    cd ${EXPNIAG}/${CDATE}
-	    EXPNIAG_FILES=$(ls *.tar)
+    elif ( grep "${CDATE}: SUCCEEDED" ${EXPNIAG_TMP_STATUS} ); then
+        echo "${EXP}-${FIELD} at ${CDATE} already completed and check why CDATE is not updated."
+	exit 0
+    fi
 
-	    if [ -z "${EXPNIAG_FILES}" ]; then
-	        echo "No tar files found at ${CDATE} ${EXP}-${FIELD}"
-		echo "Exit for now..."
-                echo "${CDATE}: FAILED" > ${EXPNIAG_TMP_STATUS}
-		exit 100
-	    fi
-	    [[ ! -d ${EXPNIAG_TMP} ]] && mkdir -p ${EXPNIAG_TMP}
-	    cd ${EXPNIAG_TMP}
-	    ${NCP} ${SCRIPTDIR}/sbatch_niag2hpss_cycle.sh ./
+    if ( grep SUCCESSFUL ${EXPGLBUS_REC} ); then
+	cd ${EXPNIAG}/${CDATE}
+	EXPNIAG_FILES=$(ls *.tar)
+
+	if [ -z "${EXPNIAG_FILES}" ]; then
+	    echo "No tar files found at ${CDATE} ${EXP}-${FIELD}"
+	    echo "Exit for now..."
+            echo "${CDATE}: FAILED" > ${EXPNIAG_TMP_STATUS}
+	    exit 100
+	fi
+
+	cd ${EXPNIAG_TMP}
+	${NCP} ${SCRIPTDIR}/sbatch_niag2hpss_cycle.sh ./
 CY=${CDATE:0:4}
 CM=${CDATE:4:2}
 CD=${CDATE:6:2}
@@ -82,14 +86,17 @@ EXPSTATUS=${EXPNIAG_TMP_STATUS}
 EOF
 
 /apps/slurm/default/bin/sbatch sbatch_niag2hpss_cycle.sh
-ERR=$?
-if [ ${ERR} -ne 0 ]; then
-    echo "Submitting sbatch job failed  at ${CDATE}"
-    exit ${ERR}
+        ERR=$?
+        if [ ${ERR} -ne 0 ]; then
+            echo "Submitting sbatch job failed  at ${CDATE}"
+            echo "${CDATE}: FAILED" > ${EXPNIAG_TMP_STATUS}
+            exit ${ERR}
+        else
+            echo "${CDATE}: ONGOING" > ${EXPNIAG_TMP_STATUS}
+        fi
+    fi # SUCCESSFUL
 else
-    echo "${CDATE}: ONGOING" > ${EXPNIAG_TMP_STATUS}
-fi
-        fi # SUCCESSFUL
-    fi # Wait to next cycle
-#done # Field
-#done # EXP
+    echo "${EXP}-${FIELD} at ${CDATE} is not ready yet and wait"
+    exit 0
+fi # Wait to next cycle
+exit 0
