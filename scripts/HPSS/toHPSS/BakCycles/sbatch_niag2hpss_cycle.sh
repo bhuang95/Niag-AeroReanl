@@ -34,7 +34,7 @@ else
     echo "${CDATE}: SUCCEEDED at $(date)" >> ${EXPREC}
     echo "${CDATE}: SUCCEEDED" > ${EXPSTATUS}
     echo ${NEXTCYC} > ${EXPNIAG_CYC}
-    #rm -rf ${EXPNIAG_DIR}/*.tar
+    rm -rf ${EXPNIAG_DIR}/*.tar
     #echo "TEST: ${EXPNIAG_DIR}"
     #echo "TEST: ${EXPREC}"
     #echo "TEST: ${EXPNIAG_CYC}"

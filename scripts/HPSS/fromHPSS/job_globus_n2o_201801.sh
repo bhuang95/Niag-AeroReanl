@@ -1,19 +1,19 @@
 #!/bin/bash
-#SBATCH -J glbus_h2n
+#SBATCH -J 201801glbus_h2n
 #SBATCH -A niagara
 #SBATCH -n 1
 #SBATCH -t 24:00:00
 #SBATCH -p service
 #SBATCH -D ./
-#SBATCH -o /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/glbus_h2n.out
-#SBATCH -e /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/glbus_h2n.out
+#SBATCH -o /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/glbus_h2n_201801.out
+#SBATCH -e /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/glbus_h2n-201801.out
 
 module load globus-cli
 
 set -x
 
-SDATE=$(cat SDATE.info)  #2020071300
-EDATE=$(cat EDATE.info)  #2020071318
+SDATE=$(cat SDATE_201801.info)  #2020071300
+EDATE=$(cat EDATE_201801.info)  #2020071318
 HRS="00 06 12 18"
 CYCINC=24
 NDATE="/home/Bo.Huang/Projects/AeroReanl/bin/ndate"
@@ -25,7 +25,7 @@ ORIONEP=2cf2c281-cafc-4b20-900b-45abeb042854
 CASE_GDAS="C96"
 CASE_ENKF="C96"
 NMEMSGRPS="01-40"
-GFSVER=v15
+GFSVER=v14
 NIAGDIR=/collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/chgres-${GFSVER}
 ORIONDIR=/work/noaa/rstprod/bohuang/DataTransfer/FromNiag/AeroReanl/ChgresGDAS/chgres-${GFSVER}
 RECORD=${CURDIR}/record_glbus_n2o.log

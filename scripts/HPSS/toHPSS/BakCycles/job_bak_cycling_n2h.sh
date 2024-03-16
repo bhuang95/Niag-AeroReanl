@@ -34,9 +34,9 @@ EXPHPSS=${TOPHPSS}/${EXP}/${FIELD}/
 
 EXPNIAG_CYC=${EXPNIAG}/toHPSS/CYCLE.info
 CDATE=$(cat ${EXPNIAG_CYC})
-if [ ${CDATE} -gt 2020072618 ]; then
-    exit 0
-fi
+#if [ ${CDATE} -gt 2020072618 ]; then
+#    exit 0
+#fi
 
 EXPGLBUS_REC=${EXPNIAG}/${CDATE}/Globus_o2n_${CDATE}.record
 if [ -f ${EXPGLBUS_REC} ]; then
@@ -85,7 +85,7 @@ EXPREC=${RECDIR}/${EXP}_${FIELD}
 EXPSTATUS=${EXPNIAG_TMP_STATUS}
 EOF
 
-/apps/slurm/default/bin/sbatch sbatch_niag2hpss_cycle.sh
+/apps/slurm_niagara/default/bin/sbatch sbatch_niag2hpss_cycle.sh
         ERR=$?
         if [ ${ERR} -ne 0 ]; then
             echo "Submitting sbatch job failed  at ${CDATE}"
@@ -94,6 +94,10 @@ EOF
         else
             echo "${CDATE}: ONGOING" > ${EXPNIAG_TMP_STATUS}
         fi
+    else
+        echo "Cannot find SUCCESSFUL in the log at${EXP}-${FIELD} at ${CDATE} and wait"
+        echo "${CDATE}: FAILED" > ${EXPNIAG_TMP_STATUS}
+        exit 100
     fi # SUCCESSFUL
 else
     echo "${EXP}-${FIELD} at ${CDATE} is not ready yet and wait"

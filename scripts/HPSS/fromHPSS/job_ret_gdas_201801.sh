@@ -1,21 +1,22 @@
 #!/bin/bash
-#SBATCH -J ret_h2n
+#SBATCH -J 201801ret_h2n
 #SBATCH -A niagara
 #SBATCH -n 1
 #SBATCH -t 24:00:00
+#SBATCH --mem=6g
 #SBATCH -p service
 #SBATCH -D ./
-#SBATCH -o /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/ret_h2n.out
-#SBATCH -e /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/ret_h2n.out
+#SBATCH -o /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/ret_h2n_201801.out
+#SBATCH -e /collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/ret_h2n_201801.out
 
 module load hpss
 
 set -x
 
-SDATE=2020072500
-EDATE=2020083118
-echo "${SDATE}" > SDATE.info 
-echo "${EDATE}" > EDATE.info 
+SDATE=2018030100  #2018020600
+EDATE=2018033118  #2018022818
+echo "${SDATE}" > SDATE_201801.info 
+echo "${EDATE}" > EDATE_201801.info 
 CYCINC=6
 NDATE="/home/Bo.Huang/Projects/AeroReanl/bin/ndate"
 CURDIR="/home/Bo.Huang/Projects/AeroReanl/scripts/HPSS/fromHPSS"
@@ -23,7 +24,7 @@ CURDIR="/home/Bo.Huang/Projects/AeroReanl/scripts/HPSS/fromHPSS"
 CASE_GDAS="C96"
 CASE_ENKF="C96"
 NMEMSGRPS="01-40"
-GFSVER=v15
+GFSVER=v14
 HPSSDIR=/BMC/fim/5year/MAPP_2018/bhuang/BackupGdas/chgres-${GFSVER}
 NIAGDIR=/collab1/data/Bo.Huang/dataTransfer/AeroReanl/ChgresGDAS/chgres-${GFSVER}
 RECORD=${CURDIR}/record_gdas_h2n.log
@@ -46,13 +47,13 @@ while [ ${CDATE} -le ${EDATE} ]; do
     [[ ! -d ${NIAGENKF} ]] && mkdir -p ${NIAGENKF}
     cd ${NIAGGDAS}
     HPSSFILE=${HPSSGDAS}/gdas.${CDATE}.${CASE_GDAS}.NC.tar
-    hsi get ${HPSSFILE}
+    hsi "get ${HPSSFILE}"
     ERR=$?
     ICNT=$((${ICNT}+${ERR}))
 
     cd ${NIAGENKF}
     HPSSFILE=${HPSSENKF}/enkfgdas.${CDATE}.${CASE_ENKF}.NC.${NMEMSGRPS}.tar
-    hsi get ${HPSSFILE}
+    hsi "get ${HPSSFILE}"
     ERR=$?
     ICNT=$((${ICNT}+${ERR}))
     if [ ${ICNT} -ne 0 ]; then
@@ -72,7 +73,7 @@ while [ ${CDATE} -le ${EDATE} ]; do
 done
 
 cd ${CURDIR}
-/apps/slurm/default/bin/sbatch job_globus_n2o.sh
+/apps/slurm_niagara/default/bin/sbatch job_globus_n2o_201801.sh
 ERR=$?
 ICNT=$((${ICNT}+${ERR}))
 if [ ${ICNT} -ne 0 ]; then
